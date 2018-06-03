@@ -7,17 +7,34 @@ if not pygame.mixer: print ('Warning, sound disabled')
 
 pygame.init()
 
+
 #Screen settings
-(width, height) = (450, 450)
+(width, height) = (800, 800)
 screen = pygame.display.set_mode((width, height))
+
+
+#Changing the bckgr color
+background_colour = (0,0,59)
+screen.fill(background_colour)
+
+#Window Title
+pygame.display.set_caption('GOTY')
+
+#Update the contents of the display
+pygame.display.flip()
+
+#Loading bg img
+bg = pygame.image.load(os.path.join("data", "bg.png"))
+
 
 #Loop for opening and closing the window
 running = True
 while  running:
+
+    screen.blit(bg, (0,0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-
-#Window Title
-pygame.display.set_caption('GOTY')
+    pygame.display.update()
