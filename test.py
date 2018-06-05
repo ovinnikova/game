@@ -5,7 +5,10 @@ from pygame.locals import *
 if not pygame.font: print ('Warning, fonts disabled')
 if not pygame.mixer: print ('Warning, sound disabled')
 
+
+
 pygame.init()
+
 
 
 #Screen settings
@@ -25,6 +28,10 @@ pygame.display.flip()
 
 #Loading bg img
 bg = pygame.image.load(os.path.join("data", "bg.png"))
+
+#Loading bg sound
+pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
+pygame.mixer.music.play(-1,0.0)
 
 
 #Loop for opening and closing the window
