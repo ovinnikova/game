@@ -25,8 +25,9 @@ clock = pygame.time.Clock()
 pygame.display.set_caption('GOTY')
 
 
-#Loading bg img
+#BG img
 bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
+y = 0
 
 #Player img
 player_img = pygame.image.load(os.path.join("data", "player_ship.png")).convert_alpha()
@@ -48,19 +49,34 @@ class Player(pygame.sprite.Sprite):
         self.speedx = 0
 
     def update(self):
+        self.speedx = 0
+        
+
+        #Movement while pressing keys
+        keystate = pygame.key.get_pressed()
+        if keystate[pygame.K_LEFT]:
+            self.speedx = -8
+        if keystate[pygame.K_RIGHT]:
+            self.speedx = 8
         self.rect.x += self.speedx
 
+        #Bg borders for player
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left < 0:
+            self.rect.left = 0
 
 
 
 
 
 
-
+#Groupping all sprites
 all_sprites = pygame.sprite.Group()
-player = Player()
-#Creating new object as instance of player class
 
+#Creating new object as instance of player class
+player = Player()
+#Adding player sprites to all sprites
 all_sprites.add(player)
 
 
@@ -78,8 +94,15 @@ while  running:
     all_sprites.update()
 
 
-    #Drawing
-    screen.blit(bg, (0,0))
+    #Drawing scrolling BG
+    rel_y = y % bg.get_rect().height
+    screen.blit(bg, (0, rel_y - bg.get_rect().height))
+    if rel_y < HEIGHT:
+        screen.blit(bg, (0, rel_y))
+    y -= 1
+   
+
+    #Srawing sprites
     all_sprites.draw(screen)
     # *after* drawing everything, flip the display
     pygame.display.flip()
