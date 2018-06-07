@@ -12,36 +12,87 @@ pygame.init()
 
 
 #Screen settings
-(width, height) = (800, 800)
-screen = pygame.display.set_mode((width, height))
+WIDTH = 800
+HEIGHT = 800
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+#FPS and time module
+FPS = 60
+clock = pygame.time.Clock()
 
-#Changing the bckgr color
-background_colour = (0,0,59)
-screen.fill(background_colour)
 
 #Window Title
 pygame.display.set_caption('GOTY')
 
-#Update the contents of the display
-pygame.display.flip()
 
 #Loading bg img
-bg = pygame.image.load(os.path.join("data", "bg.png"))
+bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
+
+#Player img
+player_img = pygame.image.load(os.path.join("data", "player_ship.png")).convert_alpha()
 
 #Loading bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
 
 
+
+#Creating a Player class
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = player_img
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WIDTH / 2
+        self.rect.bottom = HEIGHT - 10
+        self.speedx = 0
+
+    def update(self):
+        self.rect.x += self.speedx
+
+
+
+
+
+
+
+
+all_sprites = pygame.sprite.Group()
+player = Player()
+#Creating new object as instance of player class
+
+all_sprites.add(player)
+
+
 #Loop for opening and closing the window
 running = True
 while  running:
-
-    screen.blit(bg, (0,0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    pygame.display.update()
+    clock.tick(FPS)
+
+    #Update
+    all_sprites.update()
+
+
+    #Drawing
+    screen.blit(bg, (0,0))
+    all_sprites.draw(screen)
+    # *after* drawing everything, flip the display
+    pygame.display.flip()
+
+pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
