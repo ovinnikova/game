@@ -31,6 +31,7 @@ y = 0
 
 #Player img
 player_img = pygame.image.load(os.path.join("data", "player_ship.png")).convert_alpha()
+player_img2 = pygame.image.load(os.path.join("data", "pl.jpg")).convert_alpha()
 
 #Loading bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
@@ -56,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         keystate = pygame.key.get_pressed()
         if keystate[pygame.K_LEFT]:
             self.speedx = -8
+            self.image = player_img2
         if keystate[pygame.K_RIGHT]:
             self.speedx = 8
         self.rect.x += self.speedx
