@@ -34,7 +34,12 @@ y = 0
 
 #Player img
 player_img = pygame.image.load(os.path.join("data", "player_ship.png")).convert_alpha()
-player_img2 = pygame.image.load(os.path.join("data", "pl.jpg")).convert_alpha()
+player_img2 = pygame.image.load(os.path.join("data", "player_ship2.png")).convert_alpha()
+player_img3 = pygame.image.load(os.path.join("data", "player_ship3.png")).convert_alpha()
+player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).convert_alpha()
+
+#Player bullet
+player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
 #Loading bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
@@ -67,6 +72,13 @@ class Player(pygame.sprite.Sprite):
         if self.speedx == 0:
             self.image = player_img
 
+        
+        #Img while shooting
+        if (keystate[pygame.K_UP] and self.speedx == 0):
+            self.image = player_img3
+
+        if (keystate[pygame.K_UP] and self.speedx != 0):
+            self.image = player_img4
 
         #Bg borders for player
         if self.rect.right > WIDTH:
@@ -86,8 +98,7 @@ class Player(pygame.sprite.Sprite):
 class PlayerBull(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10, 20))
-        self.image.fill(YELLOW)
+        self.image = player_bullet
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
