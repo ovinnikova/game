@@ -41,7 +41,7 @@ player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).conver
 #Player bullet
 player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
-#Loading bg sound
+#Loading and playing bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
 
@@ -60,7 +60,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.speedx = 0
 
-        #Movement while pressing keys + ANIMATION!
+        #Movement while pressing keys + ANIMATION(imgs)!
         keystate = pygame.key.get_pressed()
         if keystate[pygame.K_LEFT]:
             self.speedx = -8
@@ -74,9 +74,12 @@ class Player(pygame.sprite.Sprite):
 
         
         #Img while shooting
+
+        #If player isnt moving
         if (keystate[pygame.K_UP] and self.speedx == 0):
             self.image = player_img3
 
+        #If moving
         if (keystate[pygame.K_UP] and self.speedx != 0):
             self.image = player_img4
 
@@ -191,10 +194,10 @@ while  running:
     screen.blit(bg, (0, rel_y - bg.get_rect().height))
     if rel_y < HEIGHT:
         screen.blit(bg, (0, rel_y))
-    y -= 1
+    y += 1
    
 
-    #Srawing sprites
+    #Drawing sprites
     all_sprites.draw(screen)
     # *after* drawing everything, flip the display
     pygame.display.flip()
