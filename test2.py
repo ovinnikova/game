@@ -38,6 +38,11 @@ player_img2 = pygame.image.load(os.path.join("data", "player_ship2.png")).conver
 player_img3 = pygame.image.load(os.path.join("data", "player_ship3.png")).convert_alpha()
 player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).convert_alpha()
 
+#Enemy img
+enemy_img = pygame.image.load(os.path.join("data", "enemy_ship.png")).convert_alpha()
+enemy_img2 = pygame.image.load(os.path.join("data", "enemy_ship2.png")).convert_alpha()
+
+
 #Player bullet
 player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
@@ -123,8 +128,7 @@ class PlayerBull(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((140,90))
-        self.image.fill(RED)
+        self.image = enemy_img
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
@@ -139,10 +143,18 @@ class Enemy(pygame.sprite.Sprite):
             self.speedy = random.randrange(1, 3)
 
 
-    def shoot(self):
-         e_bullet = EnemyBull(self.rect.centerx, self.rect.bottom)
-         all_sprites.add(e_bullet)
-         e_bullets.add(e_bullet)
+        #Changing enemy imgs
+        #NEED TO THINK HOW TO ANIMATE MOR NATURALLY !!!
+        keystate = pygame.key.get_pressed()
+        if keystate[pygame.K_LEFT]:
+            self.image = enemy_img2
+        
+        if keystate[pygame.K_RIGHT]:
+            self.image = enemy_img2
+        
+        if not keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+            self.image = enemy_img
+
 
 
 #Enemy bullets class
@@ -181,7 +193,7 @@ for i in range(3):
 enemy = Enemy()
 
 # The timer is the time in seconds until the enemy shoots.
-timer = random.uniform(1, 3)  # Random float between 2 and 6.
+timer = random.uniform(0, 1)  # Random float 0 and 1
 dt = 0
 
 
@@ -209,8 +221,8 @@ while  running:
         # Create a bullet and add it to the sprite groups.
         bullet = EnemyBull(enemy_x, enemy_y)
         all_sprites.add(bullet)
-        enemies.add(bullet)
-        timer = random.uniform(1, 3)  # Reset the timer.
+        e_bullets.add(bullet)
+        timer = random.uniform(0, 1)  # Reset the timer.
 
  
 
@@ -237,7 +249,7 @@ while  running:
         enemies.add(e)
 
 
-    # Check if bullet hits an enemy
+    # Check if bullet hits a player
     hits = pygame.sprite.spritecollide(player, e_bullets, False)
     if hits:
         running = False  #for test - if hits, game over!!
