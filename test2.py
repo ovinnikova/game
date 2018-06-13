@@ -41,6 +41,9 @@ player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).conver
 #Player bullet
 player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
+#Enemy bullet
+enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).convert_alpha()
+
 #Loading and playing bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
@@ -136,12 +139,34 @@ class Enemy(pygame.sprite.Sprite):
             self.speedy = random.randrange(1, 3)
 
 
+    def shoot(self):
+         e_bullet = EnemyBull(self.rect.centerx, self.rect.bottom)
+         all_sprites.add(e_bullet)
+         e_bullets.add(e_bullet)
+
+
+#Enemy bullets class
+class EnemyBull(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = enemy_bullet
+        self.rect = self.image.get_rect()
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speedy = 3
+
+    def update(self):
+        self.rect.y += self.speedy
+        # kill if it moves off the top of the screen
+        if self.rect.bottom > HEIGHT:
+            self.kill()
 
 
 #Groupping all sprites
 all_sprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 pl_bullets = pygame.sprite.Group()
+e_bullets = pygame.sprite.Group()
 
 #Creating new object as instance of player class
 player = Player()
@@ -153,6 +178,11 @@ for i in range(3):
     e = Enemy()
     all_sprites.add(e)
     enemies.add(e)
+enemy = Enemy()
+
+# The timer is the time in seconds until the enemy shoots.
+timer = random.uniform(1, 3)  # Random float between 2 and 6.
+dt = 0
 
 
 #ZA GAME LOOP
@@ -168,6 +198,24 @@ while  running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 player.shoot()
+
+    
+    # Decrease the timer by the delta time.
+    timer -= dt
+    if timer <= 0:  # Ready to fire.
+        # Pick a random enemy to get the x and y coords.
+        random_enemy = random.choice(enemies.sprites())
+        enemy_x, enemy_y = random_enemy.rect.center
+        # Create a bullet and add it to the sprite groups.
+        bullet = EnemyBull(enemy_x, enemy_y)
+        all_sprites.add(bullet)
+        enemies.add(bullet)
+        timer = random.uniform(1, 3)  # Reset the timer.
+
+ 
+
+    # clock.tick returns the time that has passed since the last frame.
+    dt = clock.tick(60) / 1000  # / 1000 to convert it to seconds.
 
     clock.tick(FPS)
 
@@ -189,12 +237,18 @@ while  running:
         enemies.add(e)
 
 
+    # Check if bullet hits an enemy
+    hits = pygame.sprite.spritecollide(player, e_bullets, False)
+    if hits:
+        running = False  #for test - if hits, game over!!
+
+
     #Drawing scrolling BG
     rel_y = y % bg.get_rect().height
     screen.blit(bg, (0, rel_y - bg.get_rect().height))
     if rel_y < HEIGHT:
         screen.blit(bg, (0, rel_y))
-    y += 1
+    y -= 1
    
 
     #Drawing sprites
