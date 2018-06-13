@@ -13,6 +13,7 @@ pygame.init()
 #COLORS
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+WHITE = (255, 255, 255)
 
 #Screen settings
 WIDTH = 800
@@ -52,6 +53,18 @@ enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).conve
 #Loading and playing bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
+
+
+#FONTS
+font_name = pygame.font.match_font('arial')
+def draw_text(surf, text, size, x, y):
+    font = pygame.font.Font(font_name, size)
+    text_surface = font.render(text, True, WHITE)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
+
+
 
 
 
@@ -192,6 +205,10 @@ for i in range(3):
     enemies.add(e)
 enemy = Enemy()
 
+#SCORE
+score = 0
+
+
 # The timer is the time in seconds until the enemy shoots.
 timer = random.uniform(0, 1)  # Random float 0 and 1
 dt = 0
@@ -244,6 +261,7 @@ while  running:
     # Check if bullet hits an enemy
     hits = pygame.sprite.groupcollide(enemies, pl_bullets, True, True)
     for hit in hits:
+        score += 50
         e = Enemy()
         all_sprites.add(e)
         enemies.add(e)
@@ -265,6 +283,9 @@ while  running:
 
     #Drawing sprites
     all_sprites.draw(screen)
+    
+    #Drawing score
+    draw_text(screen, str(score), 18, WIDTH / 2, 10)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
