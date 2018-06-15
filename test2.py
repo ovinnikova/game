@@ -33,6 +33,14 @@ pygame.display.set_caption('GOTY')
 bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
 y = 0
 
+
+#Explosion animations loading
+explosion_anim = []
+for i in range(3):
+    filename = 'explosion{}.png'.format(i)
+    img = pygame.image.load(os.path.join("data", filename)).convert_alpha()
+    explosion_anim.append(img)
+
 #Player img
 player_img = pygame.image.load(os.path.join("data", "player_ship.png")).convert_alpha()
 player_img2 = pygame.image.load(os.path.join("data", "player_ship2.png")).convert_alpha()
@@ -42,13 +50,16 @@ player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).conver
 #Enemy img
 enemy_img = pygame.image.load(os.path.join("data", "enemy_ship.png")).convert_alpha()
 enemy_img2 = pygame.image.load(os.path.join("data", "enemy_ship2.png")).convert_alpha()
-
+enemy_anim = [enemy_img, enemy_img2]
 
 #Player bullet
 player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
 #Enemy bullet
 enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).convert_alpha()
+
+#Player shooting sound
+player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
 
 #Loading and playing bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
@@ -116,6 +127,7 @@ class Player(pygame.sprite.Sprite):
         pl_bullet = PlayerBull(self.rect.centerx, self.rect.top)
         all_sprites.add(pl_bullet)
         pl_bullets.add(pl_bullet)
+        player_shoot_sound.play()
         
 
 #Player bullets class
@@ -141,11 +153,14 @@ class PlayerBull(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = enemy_img
+        self.image = enemy_anim[0]
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100, -40)
         self.speedy = random.randrange(1, 3)
+        self.frame = 0
+        self.last_update = pygame.time.get_ticks()
+        self.frame_rate = 100
 
 
     def update(self):
@@ -154,6 +169,8 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.x = random.randrange(WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(1, 3)
+
+
 
 
         #Changing enemy imgs
@@ -185,6 +202,34 @@ class EnemyBull(pygame.sprite.Sprite):
         # kill if it moves off the top of the screen
         if self.rect.bottom > HEIGHT:
             self.kill()
+
+
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, center):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = explosion_anim[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.frame = 0
+        self.last_update = pygame.time.get_ticks()
+        self.frame_rate = 100
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.frame += 1
+            if self.frame == len(explosion_anim):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = explosion_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+
+
+
+
 
 
 #Groupping all sprites
@@ -228,6 +273,7 @@ while  running:
             if event.key == pygame.K_UP:
                 player.shoot()
 
+    #Making ENEMIES shoot bullets:
     
     # Decrease the timer by the delta time.
     timer -= dt
@@ -266,6 +312,8 @@ while  running:
         e = Enemy()
         all_sprites.add(e)
         enemies.add(e)
+        expl = Explosion(hit.rect.center)
+        all_sprites.add(expl)
 
 
     # Check if bullet hits a player
@@ -286,19 +334,8 @@ while  running:
     all_sprites.draw(screen)
     
     #Drawing score
-    draw_text(screen, str(score), 18, WIDTH / 2, 10)
+    draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
 pygame.quit()
-
-
-
-
-
-
-
-
-
-
-
