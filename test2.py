@@ -234,7 +234,8 @@ while  running:
     if timer <= 0:  # Ready to fire.
         # Pick a random enemy to get the x and y coords.
         random_enemy = random.choice(enemies.sprites())
-        enemy_x, enemy_y = random_enemy.rect.center
+        enemy_x = random_enemy.rect.centerx
+        enemy_y = random_enemy.rect.bottom
         # Create a bullet and add it to the sprite groups.
         bullet = EnemyBull(enemy_x, enemy_y)
         all_sprites.add(bullet)
