@@ -48,7 +48,7 @@ player_img3 = pygame.image.load(os.path.join("data", "player_ship3.png")).conver
 player_img4 = pygame.image.load(os.path.join("data", "player_ship4.png")).convert_alpha()
 
 #Img for hp
-player_hp_img = pygame.transform.scale(player_img, (40, 25))
+player_hp_img = pygame.image.load(os.path.join("data", "hp.png")).convert_alpha()
 
 #Enemy img
 enemy_img = pygame.image.load(os.path.join("data", "enemy_ship.png")).convert_alpha()
@@ -82,7 +82,7 @@ def draw_text(surf, text, size, x, y):
 def draw_hp(surf, x, y, hp, img):
     for i in range(hp):
         img_rect = img.get_rect()
-        img_rect.x = x + 45 * i
+        img_rect.x = x + 40 * i
         img_rect.y = y
         surf.blit(img, img_rect)
 
@@ -379,7 +379,7 @@ while  running:
     
     #Drawing score
     draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
-    draw_hp(screen, WIDTH - 150, 10, player.hp, player_hp_img)
+    draw_hp(screen, WIDTH - 140, 5, player.hp, player_hp_img)
     # *after* drawing everything, flip the display
     pygame.display.flip()
 
