@@ -10,6 +10,10 @@ if not pygame.mixer: print ('Warning, sound disabled')
 
 pygame.init()
 
+#SCORE
+score = 0
+
+
 #COLORS
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
@@ -196,6 +200,11 @@ class Enemy(pygame.sprite.Sprite):
 
 
 
+        if score > 5000:
+            self.kill()
+
+
+
 #Enemy bullets class
 class EnemyBull(pygame.sprite.Sprite):
     def __init__(self, x, y, speedy=3):
@@ -210,6 +219,10 @@ class EnemyBull(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         # kill if it moves off the top of the screen
         if self.rect.bottom > HEIGHT:
+            self.kill()
+
+
+        elif score > 5000:
             self.kill()
 
 
@@ -252,6 +265,9 @@ class Powerup(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
+        elif score > 5000:
+            self.kill()
+
 
 
 
@@ -274,9 +290,6 @@ for i in range(3):
     all_sprites.add(e)
     enemies.add(e)
 enemy = Enemy()
-
-#SCORE
-score = 0
 
 
 # The timer is the time in seconds until the enemy shoots.
@@ -302,7 +315,7 @@ while  running:
     
     # Decrease the timer by the delta time.
     timer -= dt
-    if timer <= 0:  # Ready to fire.
+    if timer <= 0 and score < 5000:  # Ready to fire.
         # Pick a random enemy to get the x and y coords.
         random_enemy = random.choice(enemies.sprites())
         enemy_x = random_enemy.rect.centerx
@@ -387,7 +400,8 @@ while  running:
 
     #Drawing sprites
     all_sprites.draw(screen)
-    
+
+
     #Drawing score
     draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
     draw_hp(screen, WIDTH - 140, 5, player.hp, player_hp_img)
