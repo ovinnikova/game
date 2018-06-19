@@ -357,6 +357,14 @@ while  running:
             powerups.add(powup)
 
 
+    # Check if powerup hits a player
+    hits = pygame.sprite.spritecollide(player, powerups, True)
+    for hit in hits:
+        if player.hp != 3:
+            player.hp += 1
+            
+
+
     # Check if bullet hits a player
     hits = pygame.sprite.spritecollide(player, e_bullets, False)
     for hit in hits:
