@@ -60,6 +60,9 @@ player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).con
 #Enemy bullet
 enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).convert_alpha()
 
+#POWERUP
+hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_alpha()
+
 #Player shooting sound
 player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
 
@@ -238,7 +241,7 @@ class Explosion(pygame.sprite.Sprite):
 class Powerup(pygame.sprite.Sprite):
     def __init__(self, center):
         pygame.sprite.Sprite.__init__(self)
-        self.image = player_hp_img #CHANGE HERE
+        self.image = hp_powerup
         self.rect = self.image.get_rect()
         self.rect.center = center
         self.speedy = 2
@@ -348,7 +351,7 @@ while  running:
         expl = Explosion(hit.rect.center)
         all_sprites.add(expl)
 
-        if random.random() > 0.5:
+        if random.random() > 0.85:
             powup = Powerup(hit.rect.center)
             all_sprites.add(powup)
             powerups.add(powup)
