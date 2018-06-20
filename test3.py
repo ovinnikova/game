@@ -280,12 +280,19 @@ class Boss_v001(pygame.sprite.Sprite):
         self.image = boss_v1_img
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
-        self.rect.bottom = HEIGHT / 2
+        self.rect.top = y - 300
+        self.speedy = 1
         
 
     def update(self):
-        if score == 102:
-            self.kill()
+        self.rect.y += self.speedy
+        if self.rect.bottom == HEIGHT / 2:
+            self.speedy = 0
+
+        if score == 101:
+            self.speedy = -1
+            if self.rect.bottom == HEIGHT - 800:
+                self.kill()
 
 
 
@@ -429,9 +436,10 @@ while  running:
     if score >= 100:
         bossv1.draw(screen)
         
-        hits = pygame.sprite.groupcollide(pl_bullets, bossv1, True, False)
-        for hit in hits:
-            score += 1
+        if boss.speedy == 0:
+            hits = pygame.sprite.groupcollide(pl_bullets, bossv1, True, False)
+            for hit in hits:
+                score += 1
 
 
     #Drawing score
