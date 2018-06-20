@@ -67,6 +67,10 @@ enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).conve
 #POWERUP
 hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_alpha()
 
+#FIRST BOSS
+#POWERUP
+boss_v1_img = pygame.image.load(os.path.join("data", "boss_v1.png")).convert_alpha()
+
 #Player shooting sound
 player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
 
@@ -200,7 +204,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 
-        if score > 5000:
+        if score == 100:
             self.kill()
 
 
@@ -222,7 +226,7 @@ class EnemyBull(pygame.sprite.Sprite):
             self.kill()
 
 
-        elif score > 5000:
+        elif score == 100:
             self.kill()
 
 
@@ -265,10 +269,23 @@ class Powerup(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
-        elif score > 5000:
+        elif score == 100:
             self.kill()
 
 
+#FIRST BOSS!!
+class Boss_v001(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = boss_v1_img
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WIDTH / 2
+        self.rect.bottom = HEIGHT / 2
+        
+
+    def update(self):
+        if score == 102:
+            self.kill()
 
 
 
@@ -281,6 +298,11 @@ powerups = pygame.sprite.Group()
 
 #Creating new object as instance of player class
 player = Player()
+
+#Boss v1
+boss = Boss_v001()
+bossv1 = pygame.sprite.Group()
+bossv1.add(boss)
 #Adding player sprites to all sprites
 all_sprites.add(player)
 
@@ -315,7 +337,7 @@ while  running:
     
     # Decrease the timer by the delta time.
     timer -= dt
-    if timer <= 0 and score < 5000:  # Ready to fire.
+    if timer <= 0 and score < 100:  # Ready to fire.
         # Pick a random enemy to get the x and y coords.
         random_enemy = random.choice(enemies.sprites())
         enemy_x = random_enemy.rect.centerx
@@ -335,6 +357,7 @@ while  running:
 
     #Update
     all_sprites.update()
+    bossv1.update()
 
 
     #Check if enemy hits player
@@ -400,6 +423,15 @@ while  running:
 
     #Drawing sprites
     all_sprites.draw(screen)
+    
+    #Draw boss if score == 5000!!!!!!!!! DONT FORGET TO CTRL+F AND CHANGE IT EVERYWHERE
+
+    if score >= 100:
+        bossv1.draw(screen)
+        
+        hits = pygame.sprite.groupcollide(pl_bullets, bossv1, True, False)
+        for hit in hits:
+            score += 1
 
 
     #Drawing score
