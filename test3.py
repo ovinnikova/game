@@ -68,8 +68,8 @@ enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).conve
 hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_alpha()
 
 #FIRST BOSS
-#POWERUP
 boss_v1_img = pygame.image.load(os.path.join("data", "boss_v1.png")).convert_alpha()
+boss_v1_death = pygame.image.load(os.path.join("data", "boss_v228.png")).convert_alpha()
 
 #Player shooting sound
 player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
@@ -290,6 +290,7 @@ class Boss_v001(pygame.sprite.Sprite):
             self.speedy = 0
 
         if score == 101:
+            self.image = boss_v1_death
             self.speedy = -1
             if self.rect.bottom == HEIGHT - 800:
                 self.kill()
@@ -440,6 +441,8 @@ while  running:
             hits = pygame.sprite.groupcollide(pl_bullets, bossv1, True, False)
             for hit in hits:
                 score += 1
+                expl = Explosion(hit.rect.center)
+                all_sprites.add(expl)
 
 
     #Drawing score
