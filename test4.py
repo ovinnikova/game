@@ -14,10 +14,11 @@ pygame.init()
 # SCORE
 score = 0
 
+#GAME OVER
+game_over = False
 
 # COLORS
 RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 
 # Screen settings
@@ -38,6 +39,12 @@ pygame.display.set_caption('GOTY')
 bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
 y = 0
 
+#Cat boss imgs loading
+cat_boss = []
+for i in range(7):
+    filename = 'catbo0{}.png'.format(i)
+    img = pygame.image.load(os.path.join("data", filename)).convert_alpha()
+    cat_boss.append(img)
 
 # Explosion animations loading
 explosion_anim = []
@@ -106,6 +113,18 @@ def draw_hp(surf, x, y, hp, img):
         surf.blit(img, img_rect)
 
 
+def draw_boss_hp(surf, x, y, amount):
+    if amount < 0:
+        amount = 0
+
+    BAR_LENGTH = 400
+    BAR_HEIGHT = 25
+    fill = (amount / 100) * BAR_LENGTH
+    outline_rect = pygame.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
+    pygame.draw.rect(surf, RED, fill_rect)
+    pygame.draw.rect(surf, WHITE, outline_rect, 2)
+
 # Creating a Player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -148,6 +167,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.right = WIDTH
         if self.rect.left < 0:
             self.rect.left = 0
+
+
+        if game_over:
+            self.kill()
 
     
     # Spawning bullets
@@ -212,7 +235,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 
-        if score == 100:
+        if score == 100 or game_over:
             self.kill()
 
 
@@ -234,7 +257,7 @@ class EnemyBull(pygame.sprite.Sprite):
             self.kill()
 
 
-        elif score == 100:
+        elif score == 100 or game_over:
             self.kill()
 
 
@@ -277,7 +300,7 @@ class Powerup(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
-        elif score == 100:
+        elif score == 100 or game_over:
             self.kill()
 
 
@@ -289,7 +312,8 @@ class Boss_v001(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.top = y - 300
-        self.speedy = 1
+        self.speedy = 10
+        self.killed = False
         
 
     def update(self):
@@ -297,16 +321,82 @@ class Boss_v001(pygame.sprite.Sprite):
         if self.rect.bottom == HEIGHT / 2:
             self.speedy = 0
 
-        if score == 101:
+        if score > 100:
             self.image = boss_v1_death
-            self.speedy = -1
+            self.speedy = -10
             if self.rect.bottom == HEIGHT - 800:
                 self.kill()
 
 
+# MEOW BOSS
+class SuperBoss(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = cat_boss[0]
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WIDTH / 2
+        self.rect.top = y - 300
+        self.speedy = 3
+        self.shot_animation = False
+        self.shot_delay = 3
+        self.shot_sprite = 1
+        self.shot_timer = 0
+        self.hp = 100
+        
+
+
+
+    def update(self):
+        self.rect.y += self.speedy
+        if self.rect.bottom > HEIGHT / 2:
+            self.speedy = 0
+            ## self.rect.x += 5
+            ## if self.rect.right > WIDTH:
+            ##   self.rect.x -= 5
+            #### UZNAT CHO NE TAK!
+
+
+        if self.shot_animation:
+            self.shot_timer += 1
+            if self.shot_timer == self.shot_delay:
+                self.shot_timer = 0
+                self.shot_sprite += 1
+                if self.shot_sprite >= len(cat_boss):
+                    self.shot_sprite = 0
+                    self.shot_timer = 0
+                    self.shot_animation = False
+                else:
+                    self.image = cat_boss[self.shot_sprite]
+
+
+        if self.hp < 0:
+            self.kill()
+
+    def start_shoot(self):
+        self.shot_sprite = 0
+        self.shot_timer = 0
+        self.shot_animation = True
+
+class BossBull(pygame.sprite.Sprite):
+    def __init__(self, x, y, speedy):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = enemy_bullet
+        self.rect = self.image.get_rect()
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speedy = speedy
+
+    def update(self):
+        self.rect.y -= self.speedy
+        # kill if it moves off the top of the screen
+        if self.rect.top > HEIGHT:
+            self.kill()
+
+
+
 
 # Groupping all sprites
-all_sprites = pygame.sprite.Group()
+all_sprites = pygame.sprite.LayeredUpdates()
 enemies = pygame.sprite.Group()
 pl_bullets = pygame.sprite.Group()
 e_bullets = pygame.sprite.Group()
@@ -315,10 +405,7 @@ powerups = pygame.sprite.Group()
 # Creating new object as instance of player class
 player = Player()
 
-#Boss v1
-boss = Boss_v001()
-bossv1 = pygame.sprite.Group()
-bossv1.add(boss)
+
 
 # Adding player sprites to all sprites
 all_sprites.add(player)
@@ -330,6 +417,11 @@ for i in range(3):
     enemies.add(e)
 enemy = Enemy()
 
+boss = Boss_v001()
+bossv1 = pygame.sprite.Group()
+
+cat = SuperBoss()
+catsg = pygame.sprite.Group()
 
 # The timer is the time in seconds until the enemy shoots.
 timer = random.uniform(0, 1)  # Random float 0 and 1
@@ -349,12 +441,14 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 player.shoot()
+            elif event.key == pygame.K_ESCAPE:
+                running = False
 
     # Making ENEMIES shoot bullets:
  
     # Decrease the timer by the delta time.
     timer -= dt
-    if timer <= 0 and score < 100:  # Ready to fire.
+    if timer <= 0 and score < 100 and game_over == False:  # Ready to fire.
         # Pick a random enemy to get the x and y coords.
         random_enemy = random.choice(enemies.sprites())
         enemy_x = random_enemy.rect.centerx
@@ -374,7 +468,6 @@ while running:
 
     # Update
     all_sprites.update()
-    bossv1.update()
 
 
     # Check if enemy hits player
@@ -391,7 +484,7 @@ while running:
         expl = Explosion(player.rect.center)
         all_sprites.add(expl)
         if player.hp == 0:
-            running = False  # game over!!
+            game_over = True  # game over!!
 
 
     # Check if bullet hits an enemy
@@ -427,15 +520,19 @@ while running:
         all_sprites.add(expl)
 
         if player.hp == 0:
-            running = False  # game over!!
+            game_over = True  # game over!!
 
 
     # Drawing scrolling BG
-    rel_y = y % bg.get_rect().height
-    screen.blit(bg, (0, rel_y - bg.get_rect().height))
-    if rel_y < HEIGHT:
-        screen.blit(bg, (0, rel_y))
-    y -= 1
+    if game_over == False:
+        rel_y = y % bg.get_rect().height
+        screen.blit(bg, (0, rel_y - bg.get_rect().height))
+        if rel_y < HEIGHT:
+            screen.blit(bg, (0, rel_y))
+        y -= 1
+
+    elif game_over:
+        screen.blit(bg, (0,0))
 
 
     # Drawing sprites
@@ -444,21 +541,60 @@ while running:
     # Draw boss if score == 5000!!!!!!!!! 
     # DONT FORGET TO CTRL+F AND CHANGE IT EVERYWHERE
 
-    if score >= 100:
-        bossv1.draw(screen)
+    # FIRST BOSS
+
+    if score >= 100 and game_over == False:
+        bossv1.add(boss)
+        all_sprites.add(boss)
      
         if boss.speedy == 0:
             hits = pygame.sprite.groupcollide(pl_bullets, bossv1, True, False)
             for hit in hits:
                 score += 1
-                expl = Explosion(hit.rect.center)
-                all_sprites.add(expl)
+                expl = Explosion(boss.rect.center)
+                all_sprites.add(expl, layer=100)
+                all_sprites.move_to_front(expl)
+                boss.killed = True
+
+                if score == 102:
+                    score -= 1
+
+    # CAT BOSS
+
+    if boss.killed:
+        catsg.add(cat)
+        all_sprites.add(cat)
+
+        draw_boss_hp(screen, WIDTH - 600, 50, cat.hp)
 
 
-    # Drawing score
-    draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
-    draw_hp(screen, WIDTH - 140, 5, player.hp, player_hp_img)
-    # *after* drawing everything, flip the display
+        if cat.speedy == 0 and game_over == False:  # Ready to fire.
+
+            hits = pygame.sprite.groupcollide(pl_bullets, catsg, True, False)
+            for hit in hits:
+                score += 1
+                cat.hp -= 10
+
+            timer -= dt
+            if timer <= 0: 
+                boss_x = cat.rect.centerx
+                boss_y = cat.rect.bottom
+                bullet = BossBull(boss_x, boss_y, boss.speedy)
+                all_sprites.add(bullet)
+                e_bullets.add(bullet)
+
+                cat.start_shoot()
+                
+
+                timer = random.uniform(0, 2)
+
+                
+
+    if game_over == False:
+        # Drawing score and player hp
+        draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
+        draw_hp(screen, WIDTH - 140, 5, player.hp, player_hp_img)
+        # *after* drawing everything, flip the display
     pygame.display.flip()
 
 pygame.quit()
