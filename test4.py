@@ -16,6 +16,7 @@ score = 0
 
 #GAME OVER
 game_over = False
+victory = False
 
 # COLORS
 RED = (255, 0, 0)
@@ -34,6 +35,8 @@ clock = pygame.time.Clock()
 # Window Title
 pygame.display.set_caption('GOTY')
 
+
+# LOADING IMAGES
 
 # BG img
 bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
@@ -73,11 +76,14 @@ player_hp_img = pygame.image.load(os.path.join("data", "hp.png")).convert_alpha(
 enemy_img = pygame.image.load(os.path.join("data", "enemy_ship.png")).convert_alpha()
 enemy_img2 = pygame.image.load(os.path.join("data", "enemy_ship2.png")).convert_alpha()
 
-#P layer bullet
+# Player bullet
 player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
 
 # Enemy bullet
 enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).convert_alpha()
+
+# BOSS bullet
+boss_bullet = pygame.image.load(os.path.join("data", "boss_bull.png")).convert_alpha()
 
 # POWERUP
 hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_alpha()
@@ -86,13 +92,23 @@ hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_a
 boss_v1_img = pygame.image.load(os.path.join("data", "boss_v1.png")).convert_alpha()
 boss_v1_death = pygame.image.load(os.path.join("data", "boss_v228.png")).convert_alpha()
 
+# LOADING IMGS END
+
+# LOADING SOUNDS
+
 # Player shooting sound
 player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
+
+# Cat sounds
+cat_dmg_sound = pygame.mixer.Sound(os.path.join("data", "cat_dmg.wav"))
 
 # Loading and playing bg sound
 pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
 
+# LOADING SOUNDS END
+
+# FUNC START
 
 # FONTS
 font_name = pygame.font.match_font('arial')
@@ -125,6 +141,10 @@ def draw_boss_hp(surf, x, y, amount):
     pygame.draw.rect(surf, RED, fill_rect)
     pygame.draw.rect(surf, WHITE, outline_rect, 2)
 
+# FUNC END
+
+# CLASSES
+
 # Creating a Player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -134,6 +154,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
+        self.speedy = 0
         self.hp = 3
 
     def update(self):
@@ -235,7 +256,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 
-        if score == 100 or game_over:
+        if score == 100:
             self.kill()
 
 
@@ -257,7 +278,7 @@ class EnemyBull(pygame.sprite.Sprite):
             self.kill()
 
 
-        elif score == 100 or game_over:
+        elif score == 100:
             self.kill()
 
 
@@ -300,7 +321,7 @@ class Powerup(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
-        elif score == 100 or game_over:
+        elif score == 100:
             self.kill()
 
 
@@ -337,25 +358,21 @@ class SuperBoss(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH / 2
         self.rect.top = y - 300
         self.speedy = 3
+        self.speedx = 0
         self.shot_animation = False
         self.shot_delay = 3
         self.shot_sprite = 1
         self.shot_timer = 0
         self.hp = 100
+        self.killed = False
         
-
-
 
     def update(self):
         self.rect.y += self.speedy
+        self.rect.x += self.speedx
         if self.rect.bottom > HEIGHT / 2:
             self.speedy = 0
-            ## self.rect.x += 5
-            ## if self.rect.right > WIDTH:
-            ##   self.rect.x -= 5
-            #### UZNAT CHO NE TAK!
-
-
+            
         if self.shot_animation:
             self.shot_timer += 1
             if self.shot_timer == self.shot_delay:
@@ -371,16 +388,29 @@ class SuperBoss(pygame.sprite.Sprite):
 
         if self.hp < 0:
             self.kill()
+            self.killed = True
 
     def start_shoot(self):
         self.shot_sprite = 0
         self.shot_timer = 0
         self.shot_animation = True
 
+
+    def move(self):
+        self.mvright = False
+        if self.mvright == False:
+            self.speedx = 5
+        if self.rect.right > WIDTH:
+            self.mvright = True
+            self.speedx *= -1
+        elif self.rect.left < 0:
+            self.mvright = False
+            self.speedx *= 1
+
 class BossBull(pygame.sprite.Sprite):
     def __init__(self, x, y, speedy):
         pygame.sprite.Sprite.__init__(self)
-        self.image = enemy_bullet
+        self.image = boss_bullet
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
@@ -392,7 +422,7 @@ class BossBull(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
-
+# CLASSES END
 
 
 # Groupping all sprites
@@ -522,6 +552,7 @@ while running:
         if player.hp == 0:
             game_over = True  # game over!!
 
+    # BACKGROUND START
 
     # Drawing scrolling BG
     if game_over == False:
@@ -531,19 +562,33 @@ while running:
             screen.blit(bg, (0, rel_y))
         y -= 1
 
+        # Drawing sprites
+        all_sprites.draw(screen)
+
     elif game_over:
         screen.blit(bg, (0,0))
+        draw_text(screen, ("GAME OVER"), 48, WIDTH / 2, HEIGHT - 600)
+        draw_text(screen, ("PRESS ESC TO QUIT"), 20, WIDTH / 2, HEIGHT - 530)
+        draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
+
+    if victory:
+        screen.blit(bg, (0,0))
+        draw_text(screen, ("VICTORY!!"), 54, WIDTH / 2, HEIGHT - 600)
+        draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
+        draw_text(screen, ("MADE WITH LOVE BY ANASTASIYA OVINNIKOVA"), 20, WIDTH / 2, HEIGHT - 450)
+
+    # BACKGROUND END
 
 
-    # Drawing sprites
-    all_sprites.draw(screen)
+
+    # DRAWING SPRITES
     
     # Draw boss if score == 5000!!!!!!!!! 
     # DONT FORGET TO CTRL+F AND CHANGE IT EVERYWHERE
 
     # FIRST BOSS
 
-    if score >= 100 and game_over == False:
+    if score >= 100:
         bossv1.add(boss)
         all_sprites.add(boss)
      
@@ -562,16 +607,18 @@ while running:
     # CAT BOSS
 
     if boss.killed:
+        if game_over == False and cat.killed == False:
+            draw_boss_hp(screen, WIDTH - 600, 50, cat.hp)
+
         catsg.add(cat)
         all_sprites.add(cat)
 
-        draw_boss_hp(screen, WIDTH - 600, 50, cat.hp)
 
-
-        if cat.speedy == 0 and game_over == False:  # Ready to fire.
+        if cat.speedy == 0 and cat.killed == False:  # Ready to fire.
 
             hits = pygame.sprite.groupcollide(pl_bullets, catsg, True, False)
             for hit in hits:
+                cat_dmg_sound.play()
                 score += 1
                 cat.hp -= 10
 
@@ -587,10 +634,18 @@ while running:
                 
 
                 timer = random.uniform(0, 2)
+                cat.move()
 
-                
 
-    if game_over == False:
+    if cat.killed:
+        player.rect.y += player.speedy
+        player.speedy = -4
+        if player.rect.top < 0:
+            player.kill()
+            victory = True
+
+
+    if game_over == False and cat.killed == False:
         # Drawing score and player hp
         draw_text(screen, ("SCORE: " + (str(score))), 18, WIDTH / 2, 10)
         draw_hp(screen, WIDTH - 140, 5, player.hp, player_hp_img)
