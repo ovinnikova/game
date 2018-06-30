@@ -39,71 +39,71 @@ pygame.display.set_caption('GOTY')
 # LOADING IMAGES
 
 # BG img
-bg = pygame.image.load(os.path.join("data", "bg.png")).convert_alpha()
+bg = pygame.image.load(os.path.join("data", "imgs", "bg.png")).convert_alpha()
 y = 0
 
 #Cat boss imgs loading
 cat_boss = []
 for i in range(7):
     filename = 'catbo0{}.png'.format(i)
-    img = pygame.image.load(os.path.join("data", filename)).convert_alpha()
+    img = pygame.image.load(os.path.join("data", "imgs", filename)).convert_alpha()
     cat_boss.append(img)
 
 # Explosion animations loading
 explosion_anim = []
 for i in range(3):
     filename = 'explosion{}.png'.format(i)
-    img = pygame.image.load(os.path.join("data", filename)).convert_alpha()
+    img = pygame.image.load(os.path.join("data", "imgs", filename)).convert_alpha()
     explosion_anim.append(img)
 
 # Player img
 player_img = pygame.image.load(os.path.join
-    ("data", "player_ship.png")).convert_alpha()
+    ("data", "imgs", "player_ship.png")).convert_alpha()
 
 player_img2 = pygame.image.load(os.path.join
-    ("data", "player_ship2.png")).convert_alpha()
+    ("data", "imgs", "player_ship2.png")).convert_alpha()
 
 player_img3 = pygame.image.load(os.path.join
-    ("data", "player_ship3.png")).convert_alpha()
+    ("data", "imgs", "player_ship3.png")).convert_alpha()
 
 player_img4 = pygame.image.load(os.path.join
-    ("data", "player_ship4.png")).convert_alpha()
+    ("data", "imgs", "player_ship4.png")).convert_alpha()
 
 # Img for hp
-player_hp_img = pygame.image.load(os.path.join("data", "hp.png")).convert_alpha()
+player_hp_img = pygame.image.load(os.path.join("data", "imgs", "hp.png")).convert_alpha()
 
 # Enemy img
-enemy_img = pygame.image.load(os.path.join("data", "enemy_ship.png")).convert_alpha()
-enemy_img2 = pygame.image.load(os.path.join("data", "enemy_ship2.png")).convert_alpha()
+enemy_img = pygame.image.load(os.path.join("data", "imgs", "enemy_ship.png")).convert_alpha()
+enemy_img2 = pygame.image.load(os.path.join("data", "imgs", "enemy_ship2.png")).convert_alpha()
 
 # Player bullet
-player_bullet = pygame.image.load(os.path.join("data", "player_bullet.png")).convert_alpha()
+player_bullet = pygame.image.load(os.path.join("data", "imgs", "player_bullet.png")).convert_alpha()
 
 # Enemy bullet
-enemy_bullet = pygame.image.load(os.path.join("data", "enemy_bullet.png")).convert_alpha()
+enemy_bullet = pygame.image.load(os.path.join("data", "imgs", "enemy_bullet.png")).convert_alpha()
 
 # BOSS bullet
-boss_bullet = pygame.image.load(os.path.join("data", "boss_bull.png")).convert_alpha()
+boss_bullet = pygame.image.load(os.path.join("data", "imgs", "boss_bull.png")).convert_alpha()
 
 # POWERUP
-hp_powerup = pygame.image.load(os.path.join("data", "powerup_hp.png")).convert_alpha()
+hp_powerup = pygame.image.load(os.path.join("data", "imgs", "powerup_hp.png")).convert_alpha()
 
 # FIRST BOSS
-boss_v1_img = pygame.image.load(os.path.join("data", "boss_v1.png")).convert_alpha()
-boss_v1_death = pygame.image.load(os.path.join("data", "boss_v228.png")).convert_alpha()
+boss_v1_img = pygame.image.load(os.path.join("data", "imgs", "boss_v1.png")).convert_alpha()
+boss_v1_death = pygame.image.load(os.path.join("data", "imgs", "boss_v228.png")).convert_alpha()
 
 # LOADING IMGS END
 
 # LOADING SOUNDS
 
 # Player shooting sound
-player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "player_shoot.ogg"))
+player_shoot_sound = pygame.mixer.Sound(os.path.join("data", "sounds", "player_shoot.ogg"))
 
 # Cat sounds
-cat_dmg_sound = pygame.mixer.Sound(os.path.join("data", "cat_dmg.wav"))
+cat_dmg_sound = pygame.mixer.Sound(os.path.join("data", "sounds", "cat_dmg.wav"))
 
 # Loading and playing bg sound
-pygame.mixer.music.load(os.path.join("data", "bg3.ogg")) 
+pygame.mixer.music.load(os.path.join("data", "sounds", "bg3.ogg")) 
 pygame.mixer.music.play(-1,0.0)
 
 # LOADING SOUNDS END
