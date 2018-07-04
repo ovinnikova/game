@@ -40,6 +40,10 @@ pygame.display.set_caption('GOTY')
 
 # LOADING IMAGES
 
+#ICON
+gameIcon = pygame.image.load(os.path.join("data", "imgs", "icon.png"))
+pygame.display.set_icon(gameIcon)
+
 # BG img
 bg = pygame.image.load(os.path.join("data", "imgs", "bg.png")).convert_alpha()
 bg_y = 0
@@ -160,9 +164,9 @@ def button(text,x,y,width,height,active,inactive,action=None):
                 game_loop()
             elif action =="quit":
                 pygame.quit()
-                quit
-            elif action == "reset":
-                reset_vars()
+                quit()
+            # elif action == "reset":
+            #     reset_vars()
     else:
         pygame.draw.rect(screen, inactive, (x, y, width, height))
 
@@ -414,6 +418,12 @@ class SuperBoss(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         if self.rect.bottom > HEIGHT / 2:
             self.speedy = 0
+
+
+        if self.rect.right == 800 and self.speedx > 0:
+            self.speedx *= -1
+        elif self.rect.left == 0 and self.speedx < 0:
+            self.speedx *= -1
             
         if self.shot_animation:
             self.shot_timer += 1
@@ -547,10 +557,9 @@ def game_paused():
 
 # GAME FUNC
 def game_loop():
-    global game_over, victory
+    global game_over, victory, bg_y, score
     running = True
     while running:
-        global game_over, bg_y, victory, score
         for event in pygame.event.get():
             # Closing the window!
             if event.type == pygame.QUIT:
@@ -563,17 +572,26 @@ def game_loop():
                     player.shoot()
                 elif event.key == pygame.K_ESCAPE:
                     game_paused()
+                elif event.key == pygame.K_q:
+                    pygame.quit()
 
 
         # Making ENEMIES shoot bullets:
      
          # The timer is the time in seconds until the enemy shoots.
-        timer = random.uniform(0, 1)  # Random float 0 and 1
+        enemy_timer = random.uniform(0, 1)  # Random float 0 and 1
         dt = 0
 
+
+        # clock.tick returns the time that has passed since the last frame.
+        dt = clock.tick(60) / 1000  # / 1000 to convert it to seconds.
+
+        clock.tick(FPS)
+
+
         # Decrease the timer by the delta time.
-        timer -= dt
-        if timer <= 0 and score < 100 and game_over == False:  # Ready to fire.
+        enemy_timer -= dt
+        if enemy_timer <= 0 and score < 100 and game_over == False:  # Ready to fire.
             # Pick a random enemy to get the x and y coords.
             random_enemy = random.choice(enemies.sprites())
             enemy_x = random_enemy.rect.centerx
@@ -586,10 +604,6 @@ def game_loop():
 
 
 
-        # clock.tick returns the time that has passed since the last frame.
-        dt = clock.tick(60) / 1000  # / 1000 to convert it to seconds.
-
-        clock.tick(FPS)
 
         # Update
         all_sprites.update()
@@ -665,7 +679,7 @@ def game_loop():
         elif game_over:
             screen.blit(bg, (0,0))
             draw_text(screen, ("GAME OVER"), 48, WIDTH / 2, HEIGHT - 600)
-            draw_text(screen, ("PRESS ESC TO QUIT"), 20, WIDTH / 2, HEIGHT - 530)
+            draw_text(screen, ("PRESS Q TO QUIT"), 20, WIDTH / 2, HEIGHT - 530)
             draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
 
         if victory:
@@ -713,15 +727,16 @@ def game_loop():
 
             if cat.speedy == 0 and cat.killed == False:  # Ready to fire.
 
-                hits = pygame.sprite.groupcollide(pl_bullets, catsg, True, False)
-                for hit in hits:
-                    cat_dmg_sound.play()
-                    score += 1
-                    cat.hp -= 10
-                    expl = Explosion(cat.rect.center)
-                    all_sprites.add(expl, layer=100)
-                    #all_sprites.move_to_front(expl)
-
+                if cat.speedx != 0:
+                    hits = pygame.sprite.groupcollide(pl_bullets, catsg, True, False)
+                    for hit in hits:
+                        cat_dmg_sound.play()
+                        score += 1
+                        cat.hp -= 10
+                        expl = Explosion(cat.rect.center)
+                        all_sprites.add(expl, layer=100)
+                        #all_sprites.move_to_front(expl)
+                timer = random.uniform(0, 0.3)
                 timer -= dt
                 if timer <= 0: 
                     boss_x = cat.rect.centerx
@@ -733,7 +748,7 @@ def game_loop():
                     cat.start_shoot()
                     
 
-                    timer = random.uniform(0, 2)
+                    timer = random.uniform(0, 0.3)
                     cat.move()
 
 
@@ -756,5 +771,5 @@ def game_loop():
 
 
 game_intro()
-game_loop()
+
 pygame.quit()
