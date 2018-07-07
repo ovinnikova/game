@@ -165,8 +165,9 @@ def button(text,x,y,width,height,active,inactive,action=None):
             elif action =="quit":
                 pygame.quit()
                 quit()
-            # elif action == "reset":
-            #     reset_vars()
+            elif action == "reset":
+                reset_vars()
+                game_loop()
     else:
         pygame.draw.rect(screen, inactive, (x, y, width, height))
 
@@ -237,7 +238,7 @@ class Player(pygame.sprite.Sprite):
 
 
         if game_over:
-            self.kill()
+            self.rect.bottom = HEIGHT + 100
 
     
     # Spawning bullets
@@ -538,7 +539,7 @@ def game_paused():
         screen.blit(bg, (0,0))
         draw_text(screen, ("PAUSE"), 80, WIDTH / 2, HEIGHT - 650)
         button("CONTINUE", 275, 300, 250, 50, LIGHTER_GREY, GREY, "play")
-        # button("RESET", 275, 380, 250, 50, LIGHTER_GREY, GREY, "reset")
+        button("RESET", 275, 380, 250, 50, LIGHTER_GREY, GREY, "reset")
         button("QUIT", 275, 460, 250, 50, LIGHTER_GREY, GREY, "quit")
 
         pygame.display.update()
@@ -546,14 +547,15 @@ def game_paused():
 
 # END OF GAME INTO FUNC
 
-# #RESET FUNC
-# def reset_vars():
-#     global score
-#     score = 0
-#     player.hp = 3
-#     game_over = False
-#     victory = False
-#     game_loop()
+#RESET FUNC
+def reset_vars():
+    global score, game_over, victory
+    score = 0
+    player.hp = 3
+    game_over = False
+    victory = False
+    player.rect.bottom = HEIGHT - 10
+    
 
 # GAME FUNC
 def game_loop():
