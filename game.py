@@ -470,7 +470,7 @@ def game_loop():
             self.shot_delay = 3
             self.shot_sprite = 1
             self.shot_timer = 0
-            self.hp = 1000
+            self.hp = 100
             self.killed = False
             
 
@@ -739,7 +739,7 @@ def game_loop():
                     hits = pygame.sprite.groupcollide(pl_bullets, catsg, True, False)
                     for hit in hits:
                         cat_dmg_sound.play()
-                        score += 10
+                        score += 15
                         cat.hp -= 5
                         expl = Explosion(cat.rect.center)
                         all_sprites.add(expl, layer=100)
