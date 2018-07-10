@@ -695,7 +695,7 @@ def game_loop():
             draw_text(screen, ("VICTORY!!"), 54, WIDTH / 2, HEIGHT - 600)
             draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
             draw_text(screen, ("MADE WITH LOVE BY ANASTASIYA OVINNIKOVA"), 20, WIDTH / 2, HEIGHT - 450)
-            draw_text(screen, ("PRESS ESC TO ENTER THE MENU"), 20, WIDTH / 2, HEIGHT - 450)
+            draw_text(screen, ("PRESS ESC TO ENTER THE MENU"), 20, WIDTH / 2, HEIGHT - 400)
 
         # BACKGROUND END
 
