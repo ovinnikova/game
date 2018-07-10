@@ -210,7 +210,7 @@ def game_paused():
                 quit()
                 
         screen.blit(bg, (0,0))
-        draw_text(screen, ("PAUSE"), 80, WIDTH / 2, HEIGHT - 650)
+        draw_text(screen, ("MENU"), 80, WIDTH / 2, HEIGHT - 650)
         button("CONTINUE", 275, 300, 250, 50, LIGHTER_GREY, GREY, "continue")
         button("RESET", 275, 380, 250, 50, LIGHTER_GREY, GREY, "reset")
         button("QUIT", 275, 460, 250, 50, LIGHTER_GREY, GREY, "quit")
@@ -363,7 +363,7 @@ def game_loop():
 
 
 
-            if score == 100:
+            if score == 5000:
                 self.kill()
 
 
@@ -385,7 +385,7 @@ def game_loop():
                 self.kill()
 
 
-            elif score == 100:
+            elif score == 5000:
                 self.kill()
 
 
@@ -428,7 +428,7 @@ def game_loop():
             if self.rect.top > HEIGHT:
                 self.kill()
 
-            elif score == 100:
+            elif score == 5000:
                 self.kill()
 
 
@@ -449,7 +449,7 @@ def game_loop():
             if self.rect.bottom > HEIGHT / 2:
                 self.speedy = 0
 
-            if score > 100:
+            if score > 5000:
                 self.image = boss_v1_death
                 self.speedy = -10
                 if self.rect.bottom == HEIGHT - 800:
@@ -499,7 +499,7 @@ def game_loop():
                         self.image = cat_boss[self.shot_sprite]
 
 
-            if self.hp < 0:
+            if self.hp <= 0:
                 self.kill()
                 self.killed = True
 
@@ -599,7 +599,7 @@ def game_loop():
 
         # Decrease the timer by the delta time.
         enemy_timer -= dt
-        if enemy_timer <= 0 and score < 100 and game_over == False:  # Ready to fire.
+        if enemy_timer <= 0 and score < 5000 and game_over == False:  # Ready to fire.
             # Pick a random enemy to get the x and y coords.
             random_enemy = random.choice(enemies.sprites())
             enemy_x = random_enemy.rect.centerx
@@ -687,7 +687,7 @@ def game_loop():
         elif game_over:
             screen.blit(bg, (0,0))
             draw_text(screen, ("GAME OVER"), 48, WIDTH / 2, HEIGHT - 600)
-            draw_text(screen, ("PRESS ESC"), 20, WIDTH / 2, HEIGHT - 530)
+            draw_text(screen, ("PRESS ESC TO ENTER THE MENU"), 20, WIDTH / 2, HEIGHT - 530)
             draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
 
         if victory:
@@ -695,6 +695,7 @@ def game_loop():
             draw_text(screen, ("VICTORY!!"), 54, WIDTH / 2, HEIGHT - 600)
             draw_text(screen, ("YOU SCORED " + (str(score))), 20, WIDTH / 2, HEIGHT - 500)
             draw_text(screen, ("MADE WITH LOVE BY ANASTASIYA OVINNIKOVA"), 20, WIDTH / 2, HEIGHT - 450)
+            draw_text(screen, ("PRESS ESC TO ENTER THE MENU"), 20, WIDTH / 2, HEIGHT - 450)
 
         # BACKGROUND END
 
@@ -702,12 +703,11 @@ def game_loop():
 
         # DRAWING SPRITES
         
-        # Draw boss if score == 5000!!!!!!!!! 
-        # DONT FORGET TO CTRL+F AND CHANGE IT EVERYWHERE
+        
 
         # FIRST BOSS
 
-        if score >= 100:
+        if score >= 5000:
             bossv1.add(boss)
             all_sprites.add(boss)
          
@@ -720,7 +720,7 @@ def game_loop():
                     all_sprites.move_to_front(expl)
                     boss.killed = True
 
-                    if score == 102:
+                    if score == 5002:
                         score -= 1
 
         # CAT BOSS
