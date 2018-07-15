@@ -778,5 +778,8 @@ def game_loop():
     # END OF GAME FUNC
 
 
-game_intro()
+try:
+    game_intro()
+except:
+    pygame.error
 pygame.quit()
